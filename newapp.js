@@ -46,7 +46,9 @@ var id_num = -1;
 var judge_num = -1;
 var drop_id = -1;
 var count_id = -1;
+var stop_cnt = -1;
 var cho_scale = 0.3;
+var score = 0;
 var cho_shape = [];
 for (var i = 0; i < cho_vertices.length; i++) {
   cho_shape.push({x: cho_vertices[i].x * cho_scale, y: cho_vertices[i].y * cho_scale});
@@ -109,6 +111,7 @@ function MouseUp() {
   clearInterval(id_num);
 }
 function createCho() {
+  score = score + 1;
   var ob = Bodies.fromVertices(300, 100, cho_shape, {
     isStatic: false,
     mass: 0.5,
@@ -137,6 +140,7 @@ function gameJudge() {
   for (var i = 0; i < allbodies.length; i++) {
     if (allbodies[i].position.y > 800) {
       console.log("GameOver");
+      game_state = 2;
       Rotate = null;
       Drop = null;
       Right = null;
@@ -156,14 +160,27 @@ function stateJudge() {
       return false;
     }
   }
-  return true;
+  stop_cnt = stop_cnt + 1;
+  if (stop_cnt > 2) {
+    stop_cnt = 0;
+    return true;
+  } else {
+    return false;
+  }
 }
 function countTime() {
   ctx.font = "40px 'ＭＳ Ｐゴシック'";
   ctx.fillStyle = "red";
   if (game_state == 1) {
     ctx.fillText("", 50, 100);
-  } else {
+  } else if (game_state == 0) {
     ctx.fillText(String(ctime), 50, 100);
+  } else if (game_state == 2) {
+    ctx.font = "bold 30px 'ＭＳ Ｐゴシック'";
+    ctx.lineWidth = 10;
+    ctx.fillStyle = "orange";
+    ctx.strokeStyle = "white";
+    ctx.strokeText("あなたのは◯き力は" + String(score - 1) + "ちょうは◯き！", 30, 100, 500);
+    ctx.fillText("あなたのは◯き力は" + String(score - 1) + "ちょうは◯き！", 30, 100, 500);
   }
 }
