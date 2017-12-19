@@ -6,6 +6,7 @@ var Body = Matter.Body;
 var Vector = Matter.Vector;
 var Composite = Matter.Composite;
 var Events = Matter.Events;
+var Runner= Matter.Runner;
 
 var canvas = document.getElementById('canvas-container');
 var engine = Engine.create({
@@ -26,6 +27,7 @@ var engine = Engine.create({
 //    }
 //  }
 });
+var runner = Runner.create();
 var render = Render.create({
   element: canvas,
   engine: engine,
@@ -54,8 +56,20 @@ for (var i = 0; i < cho_vertices.length; i++) {
   cho_shape.push({x: cho_vertices[i].x * cho_scale, y: cho_vertices[i].y * cho_scale});
 }
 var current = createCho();
+var corners = []
+var next_category = Body.nextCategory();
+for (var i = 0; i < 2; i++) {
+  var temp_corner = Bodies.rectangle(100 + 400 * i, 800 * i, 1, 1, {
+    isStatic: true
+  });
+  temp_corner.collisionFilter.category = next_category;
+  temp_corner.collisionFilter.mask = 2^32 - 2;
+  corners.push(temp_corner);
+}
 var ground = Bodies.rectangle(300, 600, 400, 30, {
   isStatic: true,
+  friction: 1.0,
+  frictionStatic: 1.0,
   render: {
     fillStyle: 'rgba(0, 120, 0, 1)'
   }
@@ -69,9 +83,9 @@ var gameover = Bodies.rectangle(300, 300, 1, 1, {
     }
 });
 
-World.add(engine.world, [current, ground]);
+World.add(engine.world, [current, ground, corners[0], corners[1]]);
 Events.on(render, 'afterRender', countTime);
-Engine.run(engine);
+Runner.run(runner, engine);
 Render.run(render);
 judge_num = setInterval(function(){gameJudge()}, 500);
 function Rotate() {
@@ -110,9 +124,26 @@ function Left() {
 function MouseUp() {
   clearInterval(id_num);
 }
+function spawnHeight() {
+  allbodies = Composite.allBodies(engine.world);
+  var miny = 800;
+  for (var i = 0; i < allbodies.length; i++) {
+    if (allbodies[i].collisionFilter.category == 1) {
+      if (allbodies[i].position.y < miny) {
+        miny = allbodies[i].position.y;
+      }
+    }
+  }
+  if (miny < 300) {
+    return miny - 200;
+  } else {
+    return 100;
+  }
+}
 function createCho() {
   score = score + 1;
-  var ob = Bodies.fromVertices(300, 100, cho_shape, {
+  //var ob = Bodies.rectangle(300, spawnHeight(), 80, 80);
+  var ob = Bodies.fromVertices(300, spawnHeight(), cho_shape, {
     isStatic: false,
     mass: 0.5,
     friction: 1.0,
@@ -169,6 +200,7 @@ function stateJudge() {
   }
 }
 function countTime() {
+  Render.lookAt(render, Composite.allBodies(engine.world), {x: 20, y: 80});
   ctx.font = "40px 'ＭＳ Ｐゴシック'";
   ctx.fillStyle = "red";
   if (game_state == 1) {
@@ -182,5 +214,6 @@ function countTime() {
     ctx.strokeStyle = "white";
     ctx.strokeText("あなたのは◯き力は" + String(score - 1) + "ちょうは◯き！", 30, 100, 500);
     ctx.fillText("あなたのは◯き力は" + String(score - 1) + "ちょうは◯き！", 30, 100, 500);
+    Runner.stop(runner);
   }
 }
