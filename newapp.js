@@ -114,12 +114,14 @@ function Right() {
   if (game_state == 1) {
     return;
   }
+  clearInterval(id_num);
   id_num = setInterval(function(){Body.setPosition(current, Vector.add(current.position, Vector.create(2, 0)))}, 20);
 }
 function Left() {
   if (game_state == 1) {
     return;
   }
+  clearInterval(id_num);
   id_num = setInterval(function(){Body.setPosition(current, Vector.add(current.position, Vector.create(-2, 0)))}, 20);
 }
 function MouseUp() {
@@ -216,5 +218,27 @@ function countTime() {
     ctx.strokeText("あなたのは◯き力は" + String(score - 1) + "ちょうは◯き！", 30, 100, 500);
     ctx.fillText("あなたのは◯き力は" + String(score - 1) + "ちょうは◯き！", 30, 100, 500);
     Runner.stop(runner);
+  }
+}
+
+var key_list = [["a", "ArrowLeft"], ["s", "ArrowUp"], ["d", "ArrowRight"], ["x", "ArrowDown"]];
+var key_state_list = [false, false, false, false];
+var key_func_list = [Left, Rotate, Right, Drop];
+document.onkeydown = function(e){
+  changeKeyState(e.key, true);
+}
+document.onkeyup = function(e){
+  changeKeyState(e.key, false);
+}
+function changeKeyState(key, val){
+  for(i = 0; i < key_list.length; i++){
+    if(key_list[i].indexOf(key) >= 0){
+      if(val && !key_state_list[i]){//押しっぱなしでもkeydownイベントが発生するので変化を監視する
+        key_func_list[i]();
+      }else if(!val){
+        MouseUp();
+      }
+      key_state_list[i] = val;
+    }
   }
 }
