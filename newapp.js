@@ -84,6 +84,7 @@ function Drop() {
   if (game_state == 1) {
     return;
   }
+  MouseUp();
   clearInterval(count_id);
   game_state = 1;
   Body.setStatic(current, false);
