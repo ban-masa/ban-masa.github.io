@@ -89,12 +89,18 @@ Runner.run(runner, engine);
 Render.run(render);
 judge_num = setInterval(function(){gameJudge()}, 500);
 function Rotate() {
+  if (game_state == 2) {
+    return;
+  }
   if (game_state == 1) {
     return;
   }
   Body.rotate(current, 45.0 * 3.14 / 180.0);
 }
 function Drop() {
+  if (game_state == 2) {
+    return;
+  }
   if (game_state == 1) {
     return;
   }
@@ -111,6 +117,9 @@ function Drop() {
     }}, 1000);
 }
 function Right() {
+  if (game_state == 2) {
+    return;
+  }
   if (game_state == 1) {
     return;
   }
@@ -118,6 +127,9 @@ function Right() {
   id_num = setInterval(function(){Body.setPosition(current, Vector.add(current.position, Vector.create(2, 0)))}, 20);
 }
 function Left() {
+  if (game_state == 2) {
+    return;
+  }
   if (game_state == 1) {
     return;
   }
@@ -144,6 +156,9 @@ function spawnHeight() {
   }
 }
 function createCho() {
+  if (game_state == 2) {
+    return;
+  }
   score = score + 1;
   //var ob = Bodies.rectangle(300, spawnHeight(), 80, 80);
   var ob = Bodies.fromVertices(300, spawnHeight(), cho_shape, {
@@ -175,12 +190,6 @@ function gameJudge() {
     if (allbodies[i].position.y > 800) {
       console.log("GameOver");
       game_state = 2;
-      Rotate = null;
-      Drop = null;
-      Right = null;
-      Left = null;
-      MouseUp = null;
-      createCho = null;
       clearInterval(judge_num);
       clearInterval(drop_id);
       World.add(engine.world, [gameover]);
