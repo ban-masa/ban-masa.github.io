@@ -50,7 +50,7 @@ var drop_id = -1;
 var count_id = -1;
 var stop_cnt = -1;
 var cho_scale = 0.3;
-var jinkatsu_scale = 0.3;
+var jinkatsu_scale = 0.5;
 var score = 0;
 var cho_shape = [];
 var jinkatsu_shape = [];
@@ -74,7 +74,7 @@ for (var i = 0; i < 2; i++) {
 var ground = Bodies.rectangle(300, 600, 400, 30, {
   isStatic: true,
   friction: 1.0,
-  frictionStatic: 10,
+  frictionStatic: 1.0,
   render: {
     fillStyle: 'rgba(0, 120, 0, 1)'
   }
@@ -219,7 +219,7 @@ function createJinkatsu() {
 }
 function createObj() {
   var val = Math.floor(Math.random() * 1000);
-  if (val < 33) {
+  if (val < 0) {
     return createJinkatsu();
   } else {
     return createCho();
