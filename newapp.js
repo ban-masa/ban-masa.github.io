@@ -50,12 +50,17 @@ var drop_id = -1;
 var count_id = -1;
 var stop_cnt = -1;
 var cho_scale = 0.3;
+var jinkatsu_scale = 0.3;
 var score = 0;
 var cho_shape = [];
+var jinkatsu_shape = [];
 for (var i = 0; i < cho_vertices.length; i++) {
   cho_shape.push({x: cho_vertices[i].x * cho_scale, y: cho_vertices[i].y * cho_scale});
 }
-var current = createCho();
+for (var i = 0; i < jinkatsu_vertices.length; i++) {
+  jinkatsu_shape.push({x: jinkatsu_vertices[i].x * jinkatsu_scale, y: jinkatsu_vertices[i].y * jinkatsu_scale});
+}
+var current = createObj();
 var corners = []
 var next_category = Body.nextCategory();
 for (var i = 0; i < 2; i++) {
@@ -69,7 +74,7 @@ for (var i = 0; i < 2; i++) {
 var ground = Bodies.rectangle(300, 600, 400, 30, {
   isStatic: true,
   friction: 1.0,
-  frictionStatic: 1.0,
+  frictionStatic: 10,
   render: {
     fillStyle: 'rgba(0, 120, 0, 1)'
   }
@@ -112,7 +117,7 @@ function Drop() {
     if (stateJudge()) {
       clearInterval(drop_id);
       game_state = 0;
-      current = createCho();
+      current = createObj();
       World.add(engine.world, [current]);
     }}, 1000);
 }
@@ -183,6 +188,42 @@ function createCho() {
     ctime = ctime - 1;
   }, 1000);
   return ob;
+}
+function createJinkatsu() {
+  if (game_state == 2) {
+    return;
+  }
+  score = score + 1;
+  var ob = Bodies.fromVertices(300, spawnHeight(), jinkatsu_shape, {
+    isStatic: false,
+    mass: 0.05,
+    friction: 1.0,
+    frictionStatic: 1.0,
+    render: {
+      sprite: {
+        texture: 'jinkatsu.png',
+        xScale: jinkatsu_scale,
+        yScale: jinkatsu_scale
+      }
+    }
+  });
+  Body.setStatic(ob, true);
+  ctime = 10;
+  count_id = setInterval(function() {
+    if (ctime == 0) {
+      Drop();
+    }
+    ctime = ctime - 1;
+  }, 1000);
+  return ob;
+}
+function createObj() {
+  var val = Math.floor(Math.random() * 1000);
+  if (val < 33) {
+    return createJinkatsu();
+  } else {
+    return createCho();
+  }
 }
 function gameJudge() {
   var allbodies = Composite.allBodies(engine.world);
