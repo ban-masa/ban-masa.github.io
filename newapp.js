@@ -296,42 +296,45 @@ function changeKeyState(key, val){
 }
 
 
+//横方向：移動
+//上方向：回転
+//下方向：落下
+document.ontouchstart = function(e){
+    if (game_state != 0){ return; }
+    e.preventDefault();
+    x_first = e.changedTouches[0].pageX;
+    y_first = e.changedTouches[0].pageY;
+    x_prev = x_first;
+    y_prev = y_first;
+    x_now = x_first;
+    y_now = y_first;
+    body_position_touchstart = {x: current.position.x, y: current.position.y};
+}
 
-window.addEventListener("load", function(event) {
-    var touchStartX;
-    var touchStartY;
-    var touchMoveX;
-    var touchMoveY;
+document.ontouchmove = function(e){
+    world_width = render.bounds.max.x - render.bounds.min.x;
+    canvas_width = render.options.width;
+    canvas_left = canvas.getBoundingClientRect().left;
+    if (game_state != 0){ return; }
+    e.preventDefault();
+    x_prev = x_now;
+    y_prev = y_now;
+    x_now = e.changedTouches[0].pageX;
+    y_now = e.changedTouches[0].pageY;
+    if (Math.abs(x_now - x_prev) > Math.abs(y_now - y_prev)){//45度線と比べて横方向に動いている
+        Body.setPosition(current, Vector.add(body_position_touchstart, Vector.create((x_now - x_first) * world_width / canvas_width, 0)));
+    }
+}
 
-    // 開始時
-    window.addEventListener("touchstart", function(event) {
-    event.preventDefault();
-    // 座標の取得
-    touchStartX = event.touches[0].pageX;
-    touchStartY = event.touches[0].pageY;
-    }, false);
-
-    // 移動時
-    window.addEventListener("touchmove", function(event) {
-    event.preventDefault();
-    // 座標の取得
-    touchMoveX = event.changedTouches[0].pageX;
-    touchMoveY = event.changedTouches[0].pageY;
-    }, false);
-
-    // 終了時
-    window.addEventListener("touchend", function(event) {
-    // 移動量の判定
-        if (touchStartX > touchMoveX) {
-            if (touchStartX > (touchMoveX + 50)) {
-                //右から左に指が移動した場合
-                alert("left");
-            }
-        } else if (touchStartX < touchMoveX) {
-            if ((touchStartX + 50) < touchMoveX) {
-                //左から右に指が移動した場合
-                alert("right")
-            }
+document.ontouchend = function(e){
+    if (game_state != 0){ return; }
+    x_now = e.changedTouches[0].pageX;
+    y_now = e.changedTouches[0].pageY;
+    if (Math.abs(y_now - y_first) > Math.abs(x_now - x_first)){//45度線と比べて縦方向に動いた
+        if (y_now < y_first){
+            Rotate();
+        }else{
+            Drop();
         }
-    }, false);
-}, false);
+    }
+}
