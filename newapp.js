@@ -294,3 +294,44 @@ function changeKeyState(key, val){
     }
   }
 }
+
+
+
+window.addEventListener("load", function(event) {
+    var touchStartX;
+    var touchStartY;
+    var touchMoveX;
+    var touchMoveY;
+
+    // 開始時
+    window.addEventListener("touchstart", function(event) {
+    event.preventDefault();
+    // 座標の取得
+    touchStartX = event.touches[0].pageX;
+    touchStartY = event.touches[0].pageY;
+    }, false);
+
+    // 移動時
+    window.addEventListener("touchmove", function(event) {
+    event.preventDefault();
+    // 座標の取得
+    touchMoveX = event.changedTouches[0].pageX;
+    touchMoveY = event.changedTouches[0].pageY;
+    }, false);
+
+    // 終了時
+    window.addEventListener("touchend", function(event) {
+    // 移動量の判定
+        if (touchStartX > touchMoveX) {
+            if (touchStartX > (touchMoveX + 50)) {
+                //右から左に指が移動した場合
+                alert("left");
+            }
+        } else if (touchStartX < touchMoveX) {
+            if ((touchStartX + 50) < touchMoveX) {
+                //左から右に指が移動した場合
+                alert("right")
+            }
+        }
+    }, false);
+}, false);
