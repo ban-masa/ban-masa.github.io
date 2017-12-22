@@ -299,9 +299,9 @@ function changeKeyState(key, val){
 //横方向：移動
 //上方向：回転
 //下方向：落下
-document.ontouchstart = function(e){
-    if (game_state != 0){ return; }
+window.addEventListener("touchstart", function(e){
     e.preventDefault();
+    if (game_state != 0){ return; }
     x_first = e.changedTouches[0].pageX;
     y_first = e.changedTouches[0].pageY;
     x_prev = x_first;
@@ -309,14 +309,14 @@ document.ontouchstart = function(e){
     x_now = x_first;
     y_now = y_first;
     body_position_touchstart = {x: current.position.x, y: current.position.y};
-}
+}, {passive: false});
 
-document.ontouchmove = function(e){
+window.addEventListener("touchmove", function(e){
+    e.preventDefault();
+    if (game_state != 0){ return; }
     world_width = render.bounds.max.x - render.bounds.min.x;
     canvas_width = render.options.width;
     canvas_left = canvas.getBoundingClientRect().left;
-    if (game_state != 0){ return; }
-    e.preventDefault();
     x_prev = x_now;
     y_prev = y_now;
     x_now = e.changedTouches[0].pageX;
@@ -324,9 +324,9 @@ document.ontouchmove = function(e){
     if (Math.abs(x_now - x_prev) > Math.abs(y_now - y_prev)){//45度線と比べて横方向に動いている
         Body.setPosition(current, Vector.add(body_position_touchstart, Vector.create((x_now - x_first) * world_width / canvas_width, 0)));
     }
-}
+}, {passive: false});
 
-document.ontouchend = function(e){
+window.addEventListener("touchend", function(e){
     if (game_state != 0){ return; }
     x_now = e.changedTouches[0].pageX;
     y_now = e.changedTouches[0].pageY;
@@ -337,4 +337,4 @@ document.ontouchend = function(e){
             Drop();
         }
     }
-}
+}, {passive: false});
