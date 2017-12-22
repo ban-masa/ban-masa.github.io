@@ -8,6 +8,8 @@ var Composite = Matter.Composite;
 var Events = Matter.Events;
 var Runner= Matter.Runner;
 
+window.focus();
+var focus_state = true;
 var canvas = document.getElementById('canvas-container');
 var engine = Engine.create({
   density: 0.0005,
@@ -15,17 +17,6 @@ var engine = Engine.create({
   restitution: 0.3,
   friction: 1.0,
   frictionStatic: 1.0,
-//  render: {
-//    options: {
-//      background: './food_gyouza.png',
-//      showAngleIndicator: false,
-//      isStatic: true,
-//      wireframes: false,
-//      visible: false,
-//      width: 600,
-//      height: 800
-//    }
-//  }
 });
 var runner = Runner.create();
 var render = Render.create({
@@ -89,10 +80,15 @@ var gameover = Bodies.rectangle(300, 300, 1, 1, {
 });
 
 World.add(engine.world, [current, ground, corners[0], corners[1]]);
-Events.on(render, 'afterRender', countTime);
+Events.on(render, 'afterRender', afterRender);
 Runner.run(runner, engine);
 Render.run(render);
-judge_num = setInterval(function(){gameJudge()}, 500);
+judge_num = setInterval(function(){
+  if (!focus_state) {
+    return;
+  }
+  gameJudge()
+}, 500);
 function Rotate() {
   if (game_state == 2) {
     return;
@@ -114,6 +110,9 @@ function Drop() {
   game_state = 1;
   Body.setStatic(current, false);
   drop_id = setInterval(function() {
+    if (!focus_state) {
+      return;
+    }
     if (stateJudge()) {
       clearInterval(drop_id);
       game_state = 0;
@@ -129,7 +128,12 @@ function Right() {
     return;
   }
   clearInterval(id_num);
-  id_num = setInterval(function(){Body.setPosition(current, Vector.add(current.position, Vector.create(2, 0)))}, 20);
+  id_num = setInterval(function(){
+    if (!focus_state) {
+      return;
+    }
+    Body.setPosition(current, Vector.add(current.position, Vector.create(2, 0)))
+  }, 20);
 }
 function Left() {
   if (game_state == 2) {
@@ -139,7 +143,12 @@ function Left() {
     return;
   }
   clearInterval(id_num);
-  id_num = setInterval(function(){Body.setPosition(current, Vector.add(current.position, Vector.create(-2, 0)))}, 20);
+  id_num = setInterval(function(){
+    if (!focus_state) {
+      return;
+    }
+    Body.setPosition(current, Vector.add(current.position, Vector.create(-2, 0)))
+  }, 20);
 }
 function MouseUp() {
   clearInterval(id_num);
@@ -182,6 +191,9 @@ function createCho() {
   Body.setStatic(ob, true);
   ctime = 10;
   count_id = setInterval(function() {
+    if (!focus_state) {
+      return;
+    }
     if (ctime == 0) {
       Drop();
     }
@@ -210,6 +222,9 @@ function createJinkatsu() {
   Body.setStatic(ob, true);
   ctime = 10;
   count_id = setInterval(function() {
+    if (!focus_state) {
+      return;
+    }
     if (ctime == 0) {
       Drop();
     }
@@ -252,7 +267,7 @@ function stateJudge() {
     return false;
   }
 }
-function countTime() {
+function afterRender() {
   Render.lookAt(render, Composite.allBodies(engine.world), {x: 20, y: 80});
   ctx.font = "40px 'ＭＳ Ｐゴシック'";
   ctx.fillStyle = "red";
@@ -362,3 +377,12 @@ window.addEventListener("touchend", function(e){
       break;
   }
 }, {passive: false});
+
+function OnFocus() {
+  focus_state = true;
+}
+function OnBlur() {
+  focus_state = false;
+}
+window.onfocus = OnFocus;
+window.onblur = OnBlur;
