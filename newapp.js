@@ -42,14 +42,19 @@ var count_id = -1;
 var stop_cnt = -1;
 var cho_scale = 0.3;
 var jinkatsu_scale = 0.5;
+var inu_scale = 0.3;
 var score = 0;
 var cho_shape = [];
 var jinkatsu_shape = [];
+var inu_shape = [];
 for (var i = 0; i < cho_vertices.length; i++) {
   cho_shape.push({x: cho_vertices[i].x * cho_scale, y: cho_vertices[i].y * cho_scale});
 }
 for (var i = 0; i < jinkatsu_vertices.length; i++) {
   jinkatsu_shape.push({x: jinkatsu_vertices[i].x * jinkatsu_scale, y: jinkatsu_vertices[i].y * jinkatsu_scale});
+}
+for (var i = 0; i < inu_vertices.length; i++) {
+  inu_shape.push({x: inu_vertices[i].x * inu_scale, y: inu_vertices[i].y * inu_scale});
 }
 var current = createObj();
 var corners = []
@@ -232,10 +237,42 @@ function createJinkatsu() {
   }, 1000);
   return ob;
 }
+function createInu() {
+  if (game_state == 2) {
+    return;
+  }
+  score = score + 1;
+  //var ob = Bodies.rectangle(300, spawnHeight(), 80, 80);
+  var ob = Bodies.fromVertices(300, spawnHeight(), inu_shape, {
+    isStatic: false,
+    mass: 0.5,
+    friction: 1.0,
+    frictionStatic: 1.0,
+    render: {
+      sprite: {
+        texture: 'inu.png',
+        xScale: inu_scale,
+        yScale: inu_scale
+      }
+    }
+  });
+  Body.setStatic(ob, true);
+  ctime = 10;
+  count_id = setInterval(function() {
+    if (!focus_state) {
+      return;
+    }
+    if (ctime == 0) {
+      Drop();
+    }
+    ctime = ctime - 1;
+  }, 1000);
+  return ob;
+}
 function createObj() {
   var val = Math.floor(Math.random() * 1000);
-  if (val < 0) {
-    return createJinkatsu();
+  if (val < 100) {
+    return createInu();
   } else {
     return createCho();
   }
