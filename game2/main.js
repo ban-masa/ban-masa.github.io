@@ -10,7 +10,7 @@ var ASSETS = {
     'gameover' : "./gameover.png",
     'retry' : "./retry.png",
     'touch' : "./touch.png",
-    'donttouchman' : "./donttouchman.png",
+    'bakuha' : "./war_bakuha_switch_off.png",
   },
 };
 
@@ -114,7 +114,11 @@ phina.define('MainScene', {
       scorelabel.addChildTo(this).setPosition(80, 120);
       this.touchMoveDirection = 'none';
       this.retry = Sprite('retry').setScale(0.5, 0.5);
-      this.donttouchman = Sprite('donttouchman').addChildTo(this).setPosition(this.gridX.center(), this.gridY.center() + 330).setScale(0.4, 0.4);
+      this.bakuha = Sprite('bakuha').addChildTo(this).setPosition(this.gridX.center(), this.gridY.center() + 330).setScale(0.25, 0.25);
+      //this.rect = RectangleShape({
+      //  width: 100,
+      //  height: 100,
+      //}).addChildTo(this).setPosition(this.gridX.center(), this.gridY.center() + 300);
     },
 
     decideObjType: function() {
@@ -181,6 +185,13 @@ phina.define('MainScene', {
       }
     },
 
+    meteor_or_storm: function() {
+      for (let i = 0; i < 10; i++) {
+        var d = DropObject(i * 50 + 50, 100 + 50 * (i % 2), 0, this.decideObjType(), this.engine).addChildTo(this);
+        d.moveObj('down')
+      }
+    },
+
     onpointstart: function(e) {
       this.touchPx = e.pointer.x * this.canvasToSceneXscale;
       this.touchPy = e.pointer.y * this.canvasToSceneYscale;
@@ -209,6 +220,15 @@ phina.define('MainScene', {
         var dify = this.touchPy - this.retry.position.y;
         if (difx < 100 && difx > -100 && dify < 100 & dify > -100) {
           this.exit();
+        }
+      }
+      if ((this.game_state == 1) || (this.game_state == 2)) {
+        var difx = this.touchPx - this.bakuha.position.x;
+        var dify = this.touchPy - (this.bakuha.position.y - 30);
+        if (difx < 50 && difx > -50 && dify < 50 & dify > -50) {
+          this.meteor_or_storm();
+          this.game_state = 2
+          this.current.moveObj('down')
         }
       }
     },
