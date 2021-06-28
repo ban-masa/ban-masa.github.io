@@ -3,7 +3,7 @@ phina.globalize();
 var ASSETS = {
   image: {
     'cho': "./choharuki.png",
-    'bg' : "./background.png",
+    'bg' : "./rabbit3.png",
     'inu' : "./inu.png",
     'uma' : "./uma.png",
     'jinkatsu' : "./jinkatsu.png",
